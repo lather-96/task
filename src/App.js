@@ -7,22 +7,46 @@ import FilterBar from "./components/FilterBar";
 
 
 function App() {
-  const [allData, setData] = useState(data);
-  const [currentPage,setCurrentPage]=useState(1);
-  const [postPerPage,setPostPerPage]=useState(20);
 
+  const [allData, setData] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [postPerPage, setPostPerPage] = useState(20);
+  const [currentPosts, setCurrentPost] = useState(null);
+  useEffect(() => {
+    getItem()
+
+  }, [])
+  function getItem() {
+    const sampData = JSON.parse(localStorage.getItem('allData'))
+    if (sampData) {
+      setData(() => sampData)
+    }
+    else {
+      localStorage.setItem('allData', JSON.stringify(data))
+      setData(() => data);
+    }
     
+  }
+  function setPagination(){
+    const lastPostIndex = currentPage * postPerPage;
+    const firstPostIndex = lastPostIndex - postPerPage;
+    const currentPosts = allData?.slice(firstPostIndex, lastPostIndex);
 
+    setCurrentPost(() => currentPosts);
+  }
+  useEffect(()=>{
+    setPagination()
+  },[allData])
   const generateGenderDataForDropdown = () => {
     return [...new Set(data.map((item) => item.gender))];
   };
-  
+
   const generateDomainDataForDropdown = () => {
     return [...new Set(data.map((item) => item.domain))];
   };
 
   const handleFilterName = (name) => {
-    const filteredData = data.filter((item) => {
+    const filteredData = allData.filter((item) => {
       const fullName = `${item.first_name} ${item.last_name}`;
       if (fullName.toLowerCase().includes(name.toLowerCase())) {
         return item;
@@ -33,19 +57,8 @@ function App() {
   };
 
 
-  const handleTeamDomain = (domain) => {
-    const filteredData = data.filter((item) => {
-      if (item.domain === domain && item.available) {
-        return item;
-      }
-    });
-
-    setData(filteredData);
-    
-  };
-
   const handleFilterDomain = (domain) => {
-    const filteredData = data.filter((item) => {
+    const filteredData = allData.filter((item) => {
       if (item.domain === domain) {
         return item;
       }
@@ -56,12 +69,12 @@ function App() {
 
   const handleFilterAvailable = (available) => {
     console.log(available);
-    const filteredData = data.filter((item) => {
-      if (available==="Yes" && item.available) {
+    const filteredData = allData.filter((item) => {
+      if (available === "Yes" && item.available) {
         return item;
       }
-      if(available==="No" && !item.available)
-      return item;
+      if (available === "No" && !item.available)
+        return item;
     });
 
     setData(filteredData);
@@ -69,7 +82,7 @@ function App() {
 
 
   const handleFilterGender = (gender) => {
-    const filteredData = data.filter((item) => {
+    const filteredData = allData.filter((item) => {
       if (item.gender === gender) {
         return item;
       }
@@ -77,9 +90,8 @@ function App() {
 
     setData(filteredData);
   };
-const lastPostIndex=currentPage*postPerPage;
-const firstPostIndex=lastPostIndex-postPerPage;
-const currentPosts=allData.slice(firstPostIndex,lastPostIndex);
+
+
 
   return (
     <div className="container">
@@ -92,21 +104,20 @@ const currentPosts=allData.slice(firstPostIndex,lastPostIndex);
             onDomainFilter={handleFilterDomain}
             onAvailableFilter={handleFilterAvailable}
             onGenderFilter={handleFilterGender}
-            onTeamDomain={handleTeamDomain}
           />
         </div>
         <div className="col-sm-9">
           <div className="row mt-5">
-            {currentPosts.map((item) => (
+            {currentPosts?.map((item) => (
               <PersonItem item={item} key={item.id} />
             ))}
           </div>
           <Pagination
-                totalPosts={allData.length}
-                postsPerPage={postPerPage}
-                setCurrentPage={setCurrentPage}
-                currentPage={currentPage}
-            />
+            totalPosts={allData?.length}
+            postsPerPage={postPerPage}
+            setCurrentPage={setCurrentPage}
+            currentPage={currentPage}
+          />
         </div>
       </div>
     </div>

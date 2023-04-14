@@ -6,15 +6,13 @@ const FilterBar = ({
   onNameFilter,
   onDomainFilter,
   onAvailableFilter,
-  onGenderFilter,
-  onTeamDomain
+  onGenderFilter
 }) => {
   const [filters, setFilters] = useState({
     name: "",
     domain: "",
     gender: "",
     available: "",
-    team:""
   });
 
   const handleInput = (field,event) => {
@@ -37,9 +35,6 @@ const FilterBar = ({
         break;
       case "available":
         onAvailableFilter(value);
-        break;
-      case "team":
-        onTeamDomain(value)
         break;
       default:
         break;
@@ -114,23 +109,8 @@ const FilterBar = ({
         </select>
           </div>
           <div className="col">
-        <h4 className="border-bottom">Teams</h4>
       </div>
-      <div className="col-sm-12 my-2">
-        <label htmlFor="domain">Domain</label>
-        <select
-          className="form-control"
-          id="domain"
-          onChange={(e) =>handleInput("team",e)}
-        >
-          <option value="">Select</option>
-          {domains.map((domain) => (
-            <option value={domain} key={domain}>
-              {domain}
-            </option>
-          ))}
-        </select>
-          </div>
+      
 
       
     </div>
